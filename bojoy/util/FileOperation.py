@@ -6,7 +6,7 @@ import codecs
 
 # for test
 def createFile(fileName, filePath):
-    filePath = filePath + "\\" + fileName
+    filePath = filePath + "/" + fileName
     with open(filePath, 'w', newline='') as f:
         rows = [['1', '2', '3'], ['4', '5', '6']]
 
@@ -42,7 +42,7 @@ class FileOp:
 
     def __output2File(self):
 
-        filePath = self.folderPath + "\\" + self.fileName
+        filePath = self.folderPath + "/" + self.fileName
         if os.path.exists(self.folderPath) is False:
             os.makedirs(self.folderPath)
         if not os.path.exists(filePath):

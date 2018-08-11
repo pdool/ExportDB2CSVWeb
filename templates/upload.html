@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../static/jquery-1.7.1.min.js"></script>
+</head>
+<body>
+<h1>生成分析数据</h1>
+
+<form id="form1" enctype='multipart/form-data' method='POST' onsubmit="return false;">
+
+    <p>数据库地址：<input type=text name=dbIp>
+    <p>数据库端口：<input type=text name=dbPort>
+    <p>数据库名：<input type=text name=dbName>
+    <p>日志库名：<input type=text name=logDBName>
+    <p>数据库用户名：<input type=text name=userName>
+    <p>数据库密码：<input type=text name=pwd>
+    <p>输入查询日期(eg:2018_01_18): <input type=text name=dayStr>
+    <p><input type="button" value="增加" id="addTable"/>
+    <input type="button" value="删除" id="deleteTable"/>
+    <table id="table1" border="1">
+        <tr>
+            <td></td>
+            <td>表名</td>
+            <td>sql文件</td>
+            <td>列名</td>
+        </tr>
+            <tr>
+            <td>勾选之后点删除，删除一行</td>
+            <td>皮肤表</td>
+            <td>skin.sql</td>
+            <td>a,b,c</td>
+        </tr>
+    </table>
+
+
+    <input type="submit" value="提交">
+
+
+</form>
+
+<div id="showResult" style="float: left;font-size:20px;color: dimgrey;width: 50%;">
+</div>
+</body>
+<script>
+    num = 0;
+    $(document).ready(function () {
+        $("#addTable").click(function () {
+            num++;
+            var tr = '        <tr id ="tr' + num + '">\n' +
+                '<td>    <input type="checkbox" name="check"/></td>' +
+                '            <td><input type=text name=csvName' + num + '></td>\n' +
+                '            <td><input type="file"  name="file' + num + '"></td>\n' +
+                '            <td>列名：<input type=text name=colsName' + num + '></td>\n' +
+                '        </tr>';
+
+
+            $("#table1").append(tr);
+
+        });
+
+        $("#deleteTable").click(function () {
+            var check = document.getElementsByName("check");
+            for (var i = 0; i < check.length; i++) {
+                if (check[i].checked) {
+                    document.getElementById('table1').deleteRow(i);
+                    i--;
+                }
+            }
+        })
+    })
+    $(function () {
+        $('#form1').submit(function () { //当提交表单时，会发生 submit 事件。
+            var formData = new FormData(document.getElementById("form1"));
+            $.ajax({
+                type: "POST",
+                url: "/",
+                data: formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    $("#btn-submit").attr("disabled", true);//提交表单前的处理，防止用户多次点击【登陆】，重复提交表单
+                    $("#btn-submit").val("正在生成...");
+                },
+                success: function (msg) {
+                    if (msg != null) {
+                        $('#showResult').empty();
+                        var links = msg["result"];
+                        var htmlStr = " "
+                        for (i in links) {
+                            var link = links[i];
+                            htmlStr += '<p><a href="/static/' + link + '">' + link + '</a></p>'
+                        }
+                        $('#showResult').html(htmlStr);
+                    }
+                }
+            });
+        });
+    });
+
+
+</script>
+
+</html>
